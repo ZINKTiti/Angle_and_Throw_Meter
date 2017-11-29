@@ -1,9 +1,19 @@
 #include <Wire.h>
 #include <Adafruit_Sensor.h>
 #include <Adafruit_ADXL345_U.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
 
 /* Assign a unique ID to this sensor at the same time */
 Adafruit_ADXL345_Unified accel = Adafruit_ADXL345_Unified(12345);
+
+#define OLED_RESET 4
+Adafruit_SSD1306 display(OLED_RESET);
+
+#define NUMFLAKES 10
+#define XPOS 0
+#define YPOS 1
+#define DELTAY 2
 
 float xg,yg,zg;
 float soh;
@@ -139,6 +149,9 @@ void setup(void)
   displayDataRate();
   displayRange();
   Serial.println("");
+  
+  display.begin(SSD1306_SWITCHCAPVCC, 0x3C); // initialize with the I2C addr 0x3C
+  display.clearDisplay();   // clears the screen and buffer   // Efface l'écran
 }
 
 void loop(void) 
@@ -161,8 +174,8 @@ void loop(void)
   //Serial.print(", Z Value: "); Serial.println(zg);
   delay(500);
 
+  
   soh = yg/zg;
-
   tilt = atan(soh)*57.296;
   if (abs(tilt) > 90) {
       Serial.print("Tilt:Range Error");
@@ -176,9 +189,16 @@ void loop(void)
         angle = tilt;
       }
       Serial.print("Tilt Angle is: "); Serial.print(tilt); Serial.print(" degrees."); Serial.println(dir);
+      display.setTextSize(2);
+      display.setTextColor(WHITE);
+      display.setCursor(0,0);
+      display.print("CHORD "); display.println("50");
+      display.print("ANGLE "); display.print(tilt); display.println(" deg");
+      display.display();
     }
-  
 
 
- delay(100);
+
+ delay(5);
+ display.clearDisplay();
 }
