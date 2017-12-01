@@ -21,6 +21,109 @@ float tilt;
 float angle;
 String dir;
 
+const int PB_PLUS = 2;
+const int PB_MINUS = 3;
+const int PB_INIT = 4;
+
+int CHORD = 50;
+int STARTANGLE;
+int DISPLAYANGLE;
+int DISTANCE;
+
+void setup(void) 
+{
+  Serial.begin(115200);
+  Serial.println("Accelerometer Test"); Serial.println("");
+
+  pinMode(PB_PLUS,INPUT);
+  pinMode(PB_MINUS, INPUT);
+  pinMode(PB_INIT, INPUT);
+  
+  /* Initialise the sensor */
+  if(!accel.begin())
+  {
+    /* There was a problem detecting the ADXL345 ... check your connections */
+    Serial.println("Ooops, no ADXL345 detected ... Check your wiring!");
+    while(1);
+  }
+
+  /* Set the range to whatever is appropriate for your project */
+  accel.setRange(ADXL345_RANGE_16_G);
+  // displaySetRange(ADXL345_RANGE_8_G);
+  // displaySetRange(ADXL345_RANGE_4_G);
+  // displaySetRange(ADXL345_RANGE_2_G);
+  accel.setDataRate(ADXL345_DATARATE_3200_HZ);
+  
+  /* Display some basic information on this sensor */
+  displaySensorDetails();
+  
+  /* Display additional settings (outside the scope of sensor_t) */
+  displayDataRate();
+  displayRange();
+  Serial.println("");
+  
+  display.begin(SSD1306_SWITCHCAPVCC, 0x3C); // initialize with the I2C addr 0x3C
+  display.clearDisplay();   // clears the screen and buffer   // Efface l'écran
+}
+
+void loop(void) 
+{
+  
+  /* Get a new sensor event */ 
+  sensors_event_t event; 
+  accel.getEvent(&event);
+ 
+  /* Display the results (acceleration is measured in m/s^2) */
+  //Serial.print("X: "); Serial.print(event.acceleration.x); Serial.print("  ");
+  //Serial.print("Y: "); Serial.print(event.acceleration.y); Serial.print("  ");
+  //Serial.print("Z: "); Serial.print(event.acceleration.z); Serial.print("  ");Serial.println("m/s^2 ");
+  delay(500);
+  xg = event.acceleration.x*0.0039;
+  yg = event.acceleration.y*0.0039;
+  zg = event.acceleration.z*0.0039;
+  // Output x,y,z values - Commented out
+  //Serial.print("X Value: "); Serial.print(xg);
+  //Serial.print(", Y Value: "); Serial.print(yg);
+  //Serial.print(", Z Value: "); Serial.println(zg);
+  delay(500);
+
+  
+  //soh = yg/zg;
+  angle = abs(atan(yg/zg)*57.296);
+  DISPLAYANGLE = abs(angle-STARTANGLE);
+  DISTANCE = sin(DISPLAYANGLE) * CHORD;
+  
+  if (digitalRead(PB_INIT) == LOW)
+  {
+    STARTANGLE = angle;
+  }
+  
+  if (digitalRead(PB_PLUS) == LOW)
+  {
+    CHORD++;
+  }
+  if (digitalRead(PB_MINUS) == LOW) 
+  {
+    CHORD--; 
+  }
+  
+  Serial.print("Tilt Angle is: "); Serial.print(angle); Serial.print(" degrees. ");
+  Serial.print(" Display Angle is: "); Serial.print(DISPLAYANGLE);
+  Serial.print(" Start angle :"); Serial.print(STARTANGLE);
+  Serial.print(" Chord :"); Serial.print(CHORD);
+  Serial.print(" Distance :");Serial.println(DISTANCE);
+  display.setTextSize(1);
+  display.setTextColor(WHITE);
+  display.setCursor(0,0);
+  display.print("CHORD "); display.println(CHORD);
+  display.print("ANGLE "); display.print(DISPLAYANGLE); display.println(" deg");
+  display.display();
+  delay(5);
+  display.clearDisplay();
+}
+
+
+
 void displaySensorDetails(void)
 {
   sensor_t sensor;
@@ -121,84 +224,4 @@ void displayRange(void)
       break;
   }  
   Serial.println(" g");  
-}
-
-void setup(void) 
-{
-  Serial.begin(9600);
-  Serial.println("Accelerometer Test"); Serial.println("");
-  
-  /* Initialise the sensor */
-  if(!accel.begin())
-  {
-    /* There was a problem detecting the ADXL345 ... check your connections */
-    Serial.println("Ooops, no ADXL345 detected ... Check your wiring!");
-    while(1);
-  }
-
-  /* Set the range to whatever is appropriate for your project */
-  accel.setRange(ADXL345_RANGE_16_G);
-  // displaySetRange(ADXL345_RANGE_8_G);
-  // displaySetRange(ADXL345_RANGE_4_G);
-  // displaySetRange(ADXL345_RANGE_2_G);
-  
-  /* Display some basic information on this sensor */
-  displaySensorDetails();
-  
-  /* Display additional settings (outside the scope of sensor_t) */
-  displayDataRate();
-  displayRange();
-  Serial.println("");
-  
-  display.begin(SSD1306_SWITCHCAPVCC, 0x3C); // initialize with the I2C addr 0x3C
-  display.clearDisplay();   // clears the screen and buffer   // Efface l'écran
-}
-
-void loop(void) 
-{
-  /* Get a new sensor event */ 
-  sensors_event_t event; 
-  accel.getEvent(&event);
- 
-  /* Display the results (acceleration is measured in m/s^2) */
-  //Serial.print("X: "); Serial.print(event.acceleration.x); Serial.print("  ");
-  //Serial.print("Y: "); Serial.print(event.acceleration.y); Serial.print("  ");
-  //Serial.print("Z: "); Serial.print(event.acceleration.z); Serial.print("  ");Serial.println("m/s^2 ");
-  delay(500);
-  xg = event.acceleration.x*0.0039;
-  yg = event.acceleration.y*0.0039;
-  zg = event.acceleration.z*0.0039;
-  // Output x,y,z values - Commented out
-  //Serial.print("X Value: "); Serial.print(xg);
-  //Serial.print(", Y Value: "); Serial.print(yg);
-  //Serial.print(", Z Value: "); Serial.println(zg);
-  delay(500);
-
-  
-  soh = yg/zg;
-  tilt = atan(soh)*57.296;
-  if (abs(tilt) > 90) {
-      Serial.print("Tilt:Range Error");
-    }
-    else {
-      if (tilt < 0) {
-        dir = "Up";
-        angle = abs(tilt);
-      } else {
-        dir = "Down";
-        angle = tilt;
-      }
-      Serial.print("Tilt Angle is: "); Serial.print(tilt); Serial.print(" degrees."); Serial.println(dir);
-      display.setTextSize(2);
-      display.setTextColor(WHITE);
-      display.setCursor(0,0);
-      display.print("CHORD "); display.println("50");
-      display.print("ANGLE "); display.print(tilt); display.println(" deg");
-      display.display();
-    }
-
-
-
- delay(5);
- display.clearDisplay();
 }
