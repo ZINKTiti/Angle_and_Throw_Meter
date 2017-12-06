@@ -26,13 +26,11 @@ const int PB_MINUS = 3;
 const int PB_INIT = 4;
 
 int CHORD = 50;
-int STARTANGLE;
-int DISPLAYANGLE;
-int DISTANCE;
+float DISPLAYANGLE, DISTANCE, RADIAN, STARTANGLE;
 
 void setup(void) 
 {
-  Serial.begin(115200);
+  Serial.begin(9600);
   Serial.println("Accelerometer Test"); Serial.println("");
 
   pinMode(PB_PLUS,INPUT);
@@ -48,11 +46,11 @@ void setup(void)
   }
 
   /* Set the range to whatever is appropriate for your project */
-  accel.setRange(ADXL345_RANGE_16_G);
+  accel.setRange(ADXL345_RANGE_2_G);
   // displaySetRange(ADXL345_RANGE_8_G);
   // displaySetRange(ADXL345_RANGE_4_G);
   // displaySetRange(ADXL345_RANGE_2_G);
-  accel.setDataRate(ADXL345_DATARATE_3200_HZ);
+  //accel.setDataRate(ADXL345_DATARATE_3200_HZ);
   
   /* Display some basic information on this sensor */
   displaySensorDetails();
@@ -91,7 +89,8 @@ void loop(void)
   //soh = yg/zg;
   angle = abs(atan(yg/zg)*57.296);
   DISPLAYANGLE = abs(angle-STARTANGLE);
-  DISTANCE = sin(DISPLAYANGLE) * CHORD;
+  RADIAN = (abs(angle-STARTANGLE)* 71) / 4068;
+  DISTANCE = sin(RADIAN) * CHORD;
   
   if (digitalRead(PB_INIT) == LOW)
   {
@@ -107,16 +106,18 @@ void loop(void)
     CHORD--; 
   }
   
-  Serial.print("Tilt Angle is: "); Serial.print(angle); Serial.print(" degrees. ");
-  Serial.print(" Display Angle is: "); Serial.print(DISPLAYANGLE);
-  Serial.print(" Start angle :"); Serial.print(STARTANGLE);
-  Serial.print(" Chord :"); Serial.print(CHORD);
-  Serial.print(" Distance :");Serial.println(DISTANCE);
+  Serial.print("Tilt Angle is: "); Serial.print(angle); Serial.print(";");
+  Serial.print(" Display Angle is: "); Serial.print(DISPLAYANGLE); Serial.print(";");
+  Serial.print(" Start angle :"); Serial.print(STARTANGLE);Serial.print(";");
+  Serial.print(" Chord :"); Serial.print(CHORD);Serial.print(";");
+  Serial.print(" Radian :"); Serial.print(RADIAN); Serial.print(";");
+  Serial.print(" Distance :");Serial.print(DISTANCE); Serial.println(";");
   display.setTextSize(1);
   display.setTextColor(WHITE);
   display.setCursor(0,0);
   display.print("CHORD "); display.println(CHORD);
   display.print("ANGLE "); display.print(DISPLAYANGLE); display.println(" deg");
+  display.print("DIST "); display.print(DISTANCE); display.println(" mm"); 
   display.display();
   delay(5);
   display.clearDisplay();
