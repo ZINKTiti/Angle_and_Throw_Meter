@@ -1,0 +1,29 @@
+*Pick And Place List
+*Company=
+*Author=
+*eMail=
+*
+*Project=Angle_and_Throw_Meter
+*Date=00:54:00
+*CreatedBy=Fritzing 0.9.3b.04.19.5c895d327c44a3114e5fcc9d8260daf0cbb52806
+*
+*
+*Coordinates in mm, always center of component
+*Origin 0/0=Lower left corner of PCB
+*Rotation in degree (0-360, math. pos.)
+*
+*No;Value;Package;X;Y;Rotation;Side;Name
+1;;[THT];50.5798;-16.0714;-90;Bottom;Minus
+2;;;31.2399;-22.9814;180;Bottom;ADXL345
+3;10k;THT;12.1899;-10.2814;-180;Bottom;R5
+4;;;26.1599;-11.5514;0;Bottom;Jumper1
+5;;THT;2.02995;-10.2814;0;Bottom;Programming
+6;10k;THT;14.7299;-7.74138;-180;Bottom;R4
+7;;THT;41.3999;-14.0914;0;Bottom;Oled 164*32
+8;;[THT];50.5798;-5.91144;-90;Bottom;Init
+9;10k;THT;17.2699;-5.20138;-180;Bottom;R3
+10;;;19.8099;-10.2814;-90;Bottom;Arduino Pro Mini
+11;4.7k;THT;19.8099;-21.7114;-180;Bottom;R2
+12;;THT;7.10995;-29.3314;-90;Bottom;Power
+13;4.7k;THT;19.8099;-24.2514;180;Bottom;R1
+14;;[THT];50.5798;-26.2314;-90;Bottom;Plus
