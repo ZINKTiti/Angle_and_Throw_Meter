@@ -22,6 +22,11 @@ const int PB_INIT = 4;
 // Variables 
 int corde_gouverne = 50;     // Corde de la gouverne
 
+// Variables d'initialisation
+
+boolean INIT = false;
+boolean INVERT = false;
+
 //  Vecteurs acceleration (3 axe)
 //              x,y,z
 double v_neutre [3] = {0,0,0};
@@ -37,7 +42,7 @@ char ligne_texte [17];
 int angle_aff;
 int debattement_aff;
 //debug
-boolean debug = false;
+boolean debug = true;
 
 void setup(void) 
 {
@@ -104,7 +109,21 @@ void loop(void)
   {
      v_neutre [1] = event.acceleration.y;
      v_neutre [2] = event.acceleration.z;
+     INIT = true;
+     display.clearDisplay();
      delay(100);
+  }
+
+  if (digitalRead(PB_PLUS) == LOW & digitalRead(PB_MINUS) == LOW )
+  {
+    if (INVERT == true);INVERT = false;  
+    delay(100);  
+  }
+
+  if (digitalRead(PB_MINUS) == LOW & digitalRead(PB_INIT) == LOW )
+  {
+    if (INVERT == false);INVERT = true;  
+    delay(100); 
   }
   
   if (digitalRead(PB_PLUS) == LOW)
@@ -112,6 +131,7 @@ void loop(void)
     corde_gouverne++;
     delay(100);
   }
+  
   if (digitalRead(PB_MINUS) == LOW) 
   {
     corde_gouverne--;
@@ -121,21 +141,47 @@ void loop(void)
   angle_aff = (int) (angle*10);
   debattement_aff = (int) (debattement*10);
  
-  display.setTextSize(1);
-  display.setTextColor(WHITE);
-  display.setCursor(0,0);
-  display.print("Chord "); display.println(corde_gouverne);
-  display.print("ANGLE "); display.println(angle_aff/10);/*display.print(",");display.print(angle_aff%10); display.println(" deg")*/;
-  //display.print("Deb "); 
-  display.setTextSize(4);
-  display.setTextColor(WHITE);
-  display.setCursor(80,0);
-  display.print(debattement_aff/10);/*display.print(",");display.print(debattement_aff%10);display.println(" mm")*/; 
+  
+  if (INIT  == false)
+  {
+    display.setTextSize(2);
+    display.setTextColor(WHITE);
+    display.setCursor(0,0);
+    display.println("Click on");
+    display.println("init !");
+  }
+  else
+  {
+    if (INVERT == false)
+    {
+      display.setTextSize(1);
+      display.setTextColor(WHITE);
+      display.setCursor(0,0);
+      display.print("Chord: "); display.println(corde_gouverne);
+      display.print("Angle: "); display.println(angle_aff/10);/*display.print(",");display.print(angle_aff%10); display.println(" deg")*/;
+      display.print("Distance: "); 
+      display.setTextSize(4);
+      display.setTextColor(WHITE);
+      display.setCursor(80,0);
+      display.print(debattement_aff/10);/*display.print(",");display.print(debattement_aff%10);display.println(" mm")*/;
+    }
+    if (INVERT == true)
+    {
+      display.setTextSize(1);
+      display.setTextColor(WHITE);
+      display.setCursor(0,0);
+      display.print("Chord: "); display.println(corde_gouverne);
+      display.print("Dis: "); display.println(debattement_aff/10);/*display.print(",");display.print(debattement_aff%10);display.println(" mm")*/;
+      display.print("Angle: "); 
+      display.setTextSize(4);
+      display.setTextColor(WHITE);
+      display.setCursor(80,0);
+      display.print(angle_aff/10);/*display.print(",");display.print(angle_aff%10); display.println(" deg")*/;
+    }
+  }
   display.display();
-  delay(5);
-  display.clearDisplay();
   delay(75);
-
+  display.clearDisplay();
 
   if (debug == true)
   {
@@ -151,7 +197,8 @@ void loop(void)
     Serial.print(" Angle: "); Serial.print(angle); Serial.print(";");
     Serial.print(" Angle_aff: ");Serial.print(angle_aff/10);Serial.print(",");Serial.print(angle_aff%10); Serial.print(" deg"); Serial.print(";");
     Serial.print(" Chord :"); Serial.print(corde_gouverne);Serial.print(";");
-    Serial.print(" Debatement :");Serial.print(debattement_aff/10);Serial.print(",");Serial.print(debattement_aff%10); Serial.println(";");
+    Serial.print(" Debatement :");Serial.print(debattement_aff/10);Serial.print(",");Serial.print(debattement_aff%10); Serial.print(";");
+    Serial.println(INVERT);
   }
   
 }
