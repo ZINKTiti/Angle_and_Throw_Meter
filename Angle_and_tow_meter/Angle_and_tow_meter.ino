@@ -42,7 +42,7 @@ char ligne_texte [17];
 int angle_aff;
 int debattement_aff;
 //debug
-boolean debug = true;
+boolean debug = false;
 
 void setup(void) 
 {
@@ -202,4 +202,3 @@ void loop(void)
   }
   
 }
-
