@@ -80,7 +80,7 @@ void loop(void)
   accel.getEvent(&event);
    
   // Lecture du capteur LIS3DH
-  v_courant [0] = event.acceleration.z;
+  v_courant [0] = event.acceleration.x;
   v_courant [1] = event.acceleration.y;
   v_courant [2] = event.acceleration.z;
   
